@@ -1,12 +1,14 @@
-const SENTENCE_END = /([。!?！?…]+[」』)）]?)/g
+const BREAK_AFTER = /([。!?！?…]+[」』)）]?| +)/g
 
 const SKIP_TAGS = new Set(['img', 'audio', 'br', 'a', 'input'])
 
 /**
  * Returns a new HTML string with a line break inserted after each sentence
- * ending (。！？ etc.), so long unbroken paragraphs read more naturally.
- * Only text nodes are touched — no characters are added, removed, or
- * reordered, and existing tags/attributes (including the resource
+ * ending (。！？ etc.) and after each run of half-width spaces — old diary
+ * entries often used a plain space as a manual line-break marker instead of
+ * punctuation. Only text nodes are touched — no characters are added,
+ * removed, or reordered (the space itself is kept, a break is just added
+ * after it), and existing tags/attributes (including the resource
  * placeholders NoteView resolves) are left exactly as they are. This runs
  * entirely in the browser; nothing is sent anywhere.
  */
@@ -31,16 +33,16 @@ function insertBreaks(node: Node) {
 }
 
 function splitTextNode(textNode: Text) {
-  const parts = textNode.data.split(SENTENCE_END).filter((part) => part !== '')
+  const parts = textNode.data.split(BREAK_AFTER).filter((part) => part !== '')
   if (parts.length <= 1) return
 
   const frag = document.createDocumentFragment()
   for (let i = 0; i < parts.length; i += 2) {
     const body = parts[i] ?? ''
-    const punctuation = parts[i + 1] ?? ''
-    frag.appendChild(document.createTextNode(body + punctuation))
+    const delimiter = parts[i + 1] ?? ''
+    frag.appendChild(document.createTextNode(body + delimiter))
     const isLast = i + 2 >= parts.length
-    if (punctuation && !isLast) {
+    if (delimiter && !isLast) {
       frag.appendChild(document.createElement('br'))
     }
   }
