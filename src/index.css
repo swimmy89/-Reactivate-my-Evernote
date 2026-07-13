@@ -1,0 +1,58 @@
+:root {
+  --text: #4a4353;
+  --text-h: #2a2430;
+  --bg: #fdfcfb;
+  --bg-alt: #f6f3ee;
+  --border: #e5e0d8;
+  --accent: #a1683a;
+  --accent-bg: rgba(161, 104, 58, 0.1);
+  color-scheme: light dark;
+
+  --sans: system-ui, 'Hiragino Sans', 'Yu Gothic', 'Segoe UI', Roboto, sans-serif;
+  --serif: Georgia, 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+
+  font: 16px/1.6 var(--sans);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #d8d2cc;
+    --text-h: #f3efe9;
+    --bg: #1c1a19;
+    --bg-alt: #262321;
+    --border: #3a3532;
+    --accent: #d9a066;
+    --accent-bg: rgba(217, 160, 102, 0.15);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--serif);
+  color: var(--text-h);
+  margin: 0 0 8px;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+input {
+  font: inherit;
+}
