@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Note } from '../types'
 import { formatDateTimeLabel } from '../lib/formatDate'
+import { withNaturalLineBreaks } from '../lib/naturalLineBreaks'
 
 interface NoteViewProps {
   note: Note | null
@@ -8,6 +9,12 @@ interface NoteViewProps {
 
 export function NoteView({ note }: NoteViewProps) {
   const bodyRef = useRef<HTMLDivElement>(null)
+  const [naturalBreaks, setNaturalBreaks] = useState(true)
+
+  const displayHtml = useMemo(() => {
+    if (!note) return ''
+    return naturalBreaks ? withNaturalLineBreaks(note.contentHtml) : note.contentHtml
+  }, [note, naturalBreaks])
 
   // contentHtml only carries `data-resource-hash` placeholders for images/audio/
   // attachments (see enmlToHtml); the actual bytes live in note.resources as
@@ -38,7 +45,7 @@ export function NoteView({ note }: NoteViewProps) {
     return () => {
       for (const url of objectUrls) URL.revokeObjectURL(url)
     }
-  }, [note])
+  }, [note, displayHtml])
 
   if (!note) {
     return (
@@ -67,9 +74,16 @@ export function NoteView({ note }: NoteViewProps) {
             ))}
           </div>
         )}
+        <button
+          type="button"
+          className="note-view-format-toggle"
+          onClick={() => setNaturalBreaks((v) => !v)}
+        >
+          {naturalBreaks ? '改行: 自然な位置で調整中(元の表示に戻す)' : '改行: 元のまま(自然な位置で調整する)'}
+        </button>
       </header>
-      {/* eslint-disable-next-line react/no-danger -- contentHtml is sanitized via DOMPurify in enmlToHtml */}
-      <div ref={bodyRef} className="note-view-body" dangerouslySetInnerHTML={{ __html: note.contentHtml }} />
+      {/* eslint-disable-next-line react/no-danger -- displayHtml is derived from contentHtml, which is sanitized via DOMPurify in enmlToHtml; withNaturalLineBreaks only ever adds <br> elements */}
+      <div ref={bodyRef} className="note-view-body" dangerouslySetInnerHTML={{ __html: displayHtml }} />
     </article>
   )
 }

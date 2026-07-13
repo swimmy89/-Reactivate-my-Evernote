@@ -264,6 +264,15 @@
   border-radius: 999px;
 }
 
+.note-view-format-toggle {
+  margin-top: 12px;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 13px;
+  padding: 0;
+}
+
 .note-view-body {
   font-family: var(--serif);
   font-size: 17px;
