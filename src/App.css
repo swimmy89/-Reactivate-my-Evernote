@@ -80,6 +80,75 @@
   opacity: 0.8;
 }
 
+/* --- year summary / word ranking --- */
+
+.year-summary {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.year-summary-heading {
+  font-size: 22px;
+  color: var(--text-h);
+  margin-bottom: 4px;
+}
+
+.year-summary-meta {
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.word-rank-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.word-rank-item {
+  display: grid;
+  grid-template-columns: 20px 4.5em 1fr 2.5em;
+  align-items: center;
+  gap: 10px;
+}
+
+.word-rank-index {
+  font-size: 12px;
+  color: var(--text);
+  text-align: right;
+}
+
+.word-rank-word {
+  font-weight: 600;
+  color: var(--text-h);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.word-rank-bar-track {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--bg-alt);
+  overflow: hidden;
+}
+
+.word-rank-bar {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.word-rank-count {
+  font-size: 12px;
+  color: var(--text);
+  text-align: right;
+}
+
 /* --- sidebar --- */
 
 .sidebar {
