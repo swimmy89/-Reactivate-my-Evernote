@@ -4,6 +4,7 @@ import { Sidebar } from './components/Sidebar'
 import { NoteList } from './components/NoteList'
 import { NoteView } from './components/NoteView'
 import { UploadPanel } from './components/UploadPanel'
+import { YearTimeline } from './components/YearTimeline'
 import { clearAllNotes, getAllNotes, saveNotes } from './lib/db'
 import type { Note } from './types'
 
@@ -12,6 +13,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [query, setQuery] = useState('')
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
+  const [selectedYear, setSelectedYear] = useState<number | null>(null)
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -41,6 +43,11 @@ function App() {
     return notes
       .filter((note) => (selectedTag ? note.tags.includes(selectedTag) : true))
       .filter((note) => {
+        if (selectedYear === null) return true
+        const iso = note.created ?? note.updated
+        return iso ? new Date(iso).getFullYear() === selectedYear : false
+      })
+      .filter((note) => {
         if (!q) return true
         return (
           note.title.toLowerCase().includes(q) ||
@@ -53,7 +60,7 @@ function App() {
         const bDate = b.created ?? b.updated ?? ''
         return bDate.localeCompare(aDate)
       })
-  }, [notes, query, selectedTag])
+  }, [notes, query, selectedTag, selectedYear])
 
   const selectedNote = filteredNotes.find((n) => n.id === selectedNoteId) ?? null
 
@@ -83,6 +90,7 @@ function App() {
 
   return (
     <div className="app-layout">
+      <YearTimeline notes={notes} selectedYear={selectedYear} onSelectYear={setSelectedYear} />
       <Sidebar
         notes={notes}
         query={query}
