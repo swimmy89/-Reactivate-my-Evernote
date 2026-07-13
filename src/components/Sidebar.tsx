@@ -1,5 +1,6 @@
 import { UploadPanel } from './UploadPanel'
-import type { Note } from '../types'
+import { LifeEvents } from './LifeEvents'
+import type { LifeEvent, Note } from '../types'
 
 interface SidebarProps {
   notes: Note[]
@@ -10,6 +11,9 @@ interface SidebarProps {
   onImported: (notes: Note[]) => void
   onClearAll: () => void
   onRandomNote: () => void
+  lifeEvents: LifeEvent[]
+  onAddLifeEvent: (year: number, label: string) => void
+  onDeleteLifeEvent: (id: string) => void
 }
 
 export function Sidebar({
@@ -21,6 +25,9 @@ export function Sidebar({
   onImported,
   onClearAll,
   onRandomNote,
+  lifeEvents,
+  onAddLifeEvent,
+  onDeleteLifeEvent,
 }: SidebarProps) {
   const tagCounts = new Map<string, number>()
   for (const note of notes) {
@@ -73,6 +80,8 @@ export function Sidebar({
           ))}
         </ul>
       </div>
+
+      <LifeEvents events={lifeEvents} onAdd={onAddLifeEvent} onDelete={onDeleteLifeEvent} />
 
       <div className="sidebar-footer">
         <UploadPanel onImported={onImported} compact />

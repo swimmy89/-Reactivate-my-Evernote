@@ -1,12 +1,13 @@
-import type { Note } from '../types'
+import type { LifeEvent, Note } from '../types'
 
 interface YearTimelineProps {
   notes: Note[]
+  events: LifeEvent[]
   selectedYear: number | null
   onSelectYear: (year: number | null) => void
 }
 
-export function YearTimeline({ notes, selectedYear, onSelectYear }: YearTimelineProps) {
+export function YearTimeline({ notes, events, selectedYear, onSelectYear }: YearTimelineProps) {
   const yearCounts = new Map<number, number>()
   for (const note of notes) {
     const iso = note.created ?? note.updated
@@ -16,7 +17,15 @@ export function YearTimeline({ notes, selectedYear, onSelectYear }: YearTimeline
     const year = date.getFullYear()
     yearCounts.set(year, (yearCounts.get(year) ?? 0) + 1)
   }
-  const years = Array.from(yearCounts.keys()).sort((a, b) => a - b)
+
+  const eventsByYear = new Map<number, LifeEvent[]>()
+  for (const event of events) {
+    const list = eventsByYear.get(event.year) ?? []
+    list.push(event)
+    eventsByYear.set(event.year, list)
+  }
+
+  const years = Array.from(new Set([...yearCounts.keys(), ...eventsByYear.keys()])).sort((a, b) => a - b)
 
   if (years.length === 0) return null
 
@@ -29,17 +38,22 @@ export function YearTimeline({ notes, selectedYear, onSelectYear }: YearTimeline
       >
         すべて
       </button>
-      {years.map((year) => (
-        <button
-          key={year}
-          type="button"
-          className={selectedYear === year ? 'year-chip is-active' : 'year-chip'}
-          onClick={() => onSelectYear(year)}
-        >
-          {year}
-          <span className="year-chip-count">({yearCounts.get(year)})</span>
-        </button>
-      ))}
+      {years.map((year) => {
+        const yearEvents = eventsByYear.get(year)
+        return (
+          <button
+            key={year}
+            type="button"
+            className={selectedYear === year ? 'year-chip is-active' : 'year-chip'}
+            onClick={() => onSelectYear(year)}
+          >
+            <span className="year-chip-year-row">
+              {year} <span className="year-chip-count">({yearCounts.get(year) ?? 0})</span>
+            </span>
+            {yearEvents && <span className="year-chip-event">🎯{yearEvents.map((e) => e.label).join('・')}</span>}
+          </button>
+        )
+      })}
     </nav>
   )
 }
