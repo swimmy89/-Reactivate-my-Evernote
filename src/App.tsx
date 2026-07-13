@@ -5,11 +5,12 @@ import { NoteList } from './components/NoteList'
 import { NoteView } from './components/NoteView'
 import { UploadPanel } from './components/UploadPanel'
 import { YearTimeline } from './components/YearTimeline'
-import { clearAllNotes, getAllNotes, saveNotes } from './lib/db'
-import type { Note } from './types'
+import { clearAllNotes, deleteLifeEvent, getAllLifeEvents, getAllNotes, saveLifeEvent, saveNotes } from './lib/db'
+import type { LifeEvent, Note } from './types'
 
 function App() {
   const [notes, setNotes] = useState<Note[]>([])
+  const [lifeEvents, setLifeEvents] = useState<LifeEvent[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [query, setQuery] = useState('')
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
@@ -17,10 +18,24 @@ function App() {
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null)
 
   useEffect(() => {
-    getAllNotes()
-      .then((stored) => setNotes(stored))
+    Promise.all([getAllNotes(), getAllLifeEvents()])
+      .then(([storedNotes, storedEvents]) => {
+        setNotes(storedNotes)
+        setLifeEvents(storedEvents)
+      })
       .finally(() => setIsLoading(false))
   }, [])
+
+  const handleAddLifeEvent = (year: number, label: string) => {
+    const event: LifeEvent = { id: crypto.randomUUID(), year, label }
+    setLifeEvents((prev) => [...prev, event])
+    void saveLifeEvent(event)
+  }
+
+  const handleDeleteLifeEvent = (id: string) => {
+    setLifeEvents((prev) => prev.filter((e) => e.id !== id))
+    void deleteLifeEvent(id)
+  }
 
   const handleImported = (imported: Note[]) => {
     setNotes((prev) => {
@@ -95,7 +110,12 @@ function App() {
 
   return (
     <div className="app-layout">
-      <YearTimeline notes={notes} selectedYear={selectedYear} onSelectYear={setSelectedYear} />
+      <YearTimeline
+        notes={notes}
+        events={lifeEvents}
+        selectedYear={selectedYear}
+        onSelectYear={setSelectedYear}
+      />
       <Sidebar
         notes={notes}
         query={query}
@@ -105,6 +125,9 @@ function App() {
         onImported={handleImported}
         onClearAll={handleClearAll}
         onRandomNote={handleRandomNote}
+        lifeEvents={lifeEvents}
+        onAddLifeEvent={handleAddLifeEvent}
+        onDeleteLifeEvent={handleDeleteLifeEvent}
       />
       <NoteList
         notes={filteredNotes}

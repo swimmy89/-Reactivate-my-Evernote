@@ -25,3 +25,10 @@ export interface Note {
   latitude?: number
   longitude?: number
 }
+
+/** A user-registered life milestone (大学, 就職, 結婚, 出産, ...) shown on the year timeline. */
+export interface LifeEvent {
+  id: string
+  year: number
+  label: string
+}
