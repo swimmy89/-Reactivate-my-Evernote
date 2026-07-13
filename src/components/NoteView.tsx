@@ -3,14 +3,16 @@ import type { Note } from '../types'
 import { formatDateTimeLabel } from '../lib/formatDate'
 import { withNaturalLineBreaks } from '../lib/naturalLineBreaks'
 import { OnThisDay } from './OnThisDay'
+import { YearSummary } from './YearSummary'
 
 interface NoteViewProps {
   note: Note | null
   allNotes: Note[]
+  selectedYear: number | null
   onSelectNote: (id: string) => void
 }
 
-export function NoteView({ note, allNotes, onSelectNote }: NoteViewProps) {
+export function NoteView({ note, allNotes, selectedYear, onSelectNote }: NoteViewProps) {
   const bodyRef = useRef<HTMLDivElement>(null)
   const [naturalBreaks, setNaturalBreaks] = useState(true)
 
@@ -53,7 +55,17 @@ export function NoteView({ note, allNotes, onSelectNote }: NoteViewProps) {
   if (!note) {
     return (
       <div className="note-view note-view-empty">
-        <OnThisDay notes={allNotes} onSelectNote={onSelectNote} />
+        {selectedYear !== null ? (
+          <YearSummary
+            year={selectedYear}
+            notes={allNotes.filter((n) => {
+              const iso = n.created ?? n.updated
+              return iso ? new Date(iso).getFullYear() === selectedYear : false
+            })}
+          />
+        ) : (
+          <OnThisDay notes={allNotes} onSelectNote={onSelectNote} />
+        )}
       </div>
     )
   }
