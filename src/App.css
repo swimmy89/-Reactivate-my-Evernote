@@ -108,6 +108,20 @@
   margin-bottom: 20px;
 }
 
+.year-review-text {
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--text-h);
+  margin-bottom: 24px;
+}
+
+.year-summary-subheading {
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
 .word-rank-list {
   list-style: none;
   margin: 0;
