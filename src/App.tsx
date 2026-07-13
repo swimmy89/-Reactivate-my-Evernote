@@ -58,9 +58,14 @@ function App() {
       .sort((a, b) => {
         const aDate = a.created ?? a.updated ?? ''
         const bDate = b.created ?? b.updated ?? ''
-        return bDate.localeCompare(aDate)
+        // While searching by keyword, show results oldest-first so it reads as
+        // a timeline of how the theme was written about over the years,
+        // rather than the usual newest-first browsing order.
+        return q ? aDate.localeCompare(bDate) : bDate.localeCompare(aDate)
       })
   }, [notes, query, selectedTag, selectedYear])
+
+  const isSearching = query.trim() !== ''
 
   const selectedNote = filteredNotes.find((n) => n.id === selectedNoteId) ?? null
 
@@ -101,7 +106,12 @@ function App() {
         onClearAll={handleClearAll}
         onRandomNote={handleRandomNote}
       />
-      <NoteList notes={filteredNotes} selectedNoteId={selectedNoteId} onSelectNote={setSelectedNoteId} />
+      <NoteList
+        notes={filteredNotes}
+        selectedNoteId={selectedNoteId}
+        onSelectNote={setSelectedNoteId}
+        groupByYear={isSearching}
+      />
       <NoteView note={selectedNote} allNotes={notes} onSelectNote={setSelectedNoteId} />
     </div>
   )
