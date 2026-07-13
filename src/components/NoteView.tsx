@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { Note } from '../types'
+import type { LifeEvent, Note } from '../types'
 import { formatDateTimeLabel } from '../lib/formatDate'
 import { withNaturalLineBreaks } from '../lib/naturalLineBreaks'
 import { OnThisDay } from './OnThisDay'
@@ -8,11 +8,12 @@ import { YearSummary } from './YearSummary'
 interface NoteViewProps {
   note: Note | null
   allNotes: Note[]
+  lifeEvents: LifeEvent[]
   selectedYear: number | null
   onSelectNote: (id: string) => void
 }
 
-export function NoteView({ note, allNotes, selectedYear, onSelectNote }: NoteViewProps) {
+export function NoteView({ note, allNotes, lifeEvents, selectedYear, onSelectNote }: NoteViewProps) {
   const bodyRef = useRef<HTMLDivElement>(null)
   const [naturalBreaks, setNaturalBreaks] = useState(true)
 
@@ -62,6 +63,7 @@ export function NoteView({ note, allNotes, selectedYear, onSelectNote }: NoteVie
               const iso = n.created ?? n.updated
               return iso ? new Date(iso).getFullYear() === selectedYear : false
             })}
+            lifeEvents={lifeEvents}
           />
         ) : (
           <OnThisDay notes={allNotes} onSelectNote={onSelectNote} />

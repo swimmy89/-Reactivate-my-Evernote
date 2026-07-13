@@ -135,7 +135,13 @@ function App() {
         onSelectNote={setSelectedNoteId}
         groupByYear={isSearching}
       />
-      <NoteView note={selectedNote} allNotes={notes} selectedYear={selectedYear} onSelectNote={setSelectedNoteId} />
+      <NoteView
+        note={selectedNote}
+        allNotes={notes}
+        lifeEvents={lifeEvents}
+        selectedYear={selectedYear}
+        onSelectNote={setSelectedNoteId}
+      />
     </div>
   )
 }
