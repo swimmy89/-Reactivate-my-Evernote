@@ -2,12 +2,15 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Note } from '../types'
 import { formatDateTimeLabel } from '../lib/formatDate'
 import { withNaturalLineBreaks } from '../lib/naturalLineBreaks'
+import { OnThisDay } from './OnThisDay'
 
 interface NoteViewProps {
   note: Note | null
+  allNotes: Note[]
+  onSelectNote: (id: string) => void
 }
 
-export function NoteView({ note }: NoteViewProps) {
+export function NoteView({ note, allNotes, onSelectNote }: NoteViewProps) {
   const bodyRef = useRef<HTMLDivElement>(null)
   const [naturalBreaks, setNaturalBreaks] = useState(true)
 
@@ -50,7 +53,7 @@ export function NoteView({ note }: NoteViewProps) {
   if (!note) {
     return (
       <div className="note-view note-view-empty">
-        <p>左の一覧から日記を選んでください</p>
+        <OnThisDay notes={allNotes} onSelectNote={onSelectNote} />
       </div>
     )
   }
