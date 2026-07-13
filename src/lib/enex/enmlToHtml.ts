@@ -30,7 +30,7 @@ export function enmlToHtml(enml: string, resources: NoteResource[]): EnmlConvers
 
   const html = DOMPurify.sanitize(rawHtml, {
     ADD_TAGS: ['input'],
-    ADD_ATTR: ['checked', 'disabled', 'download'],
+    ADD_ATTR: ['checked', 'disabled', 'download', 'data-resource-hash'],
   })
   const plainText = html
     .replace(/<[^>]+>/g, ' ')
@@ -110,14 +110,18 @@ function appendMedia(el: Element, out: string[], resourceByHash: Map<string, Not
     return
   }
 
-  const dataUri = `data:${resource.mime};base64,${resource.dataBase64}`
+  // No src/href here: the resource's bytes live in `note.resources` as a Blob
+  // and are resolved to an object URL at render time (see NoteView). Baking a
+  // base64 data: URI into this HTML string used to duplicate every attachment's
+  // bytes in memory, which is what was crashing Safari on iPhone.
+  const hashAttr = `data-resource-hash="${escapeHtml(hash)}"`
   if (type.startsWith('image/')) {
-    out.push(`<img src="${dataUri}" alt="${escapeHtml(resource.fileName)}" class="enex-image" />`)
+    out.push(`<img ${hashAttr} alt="${escapeHtml(resource.fileName)}" class="enex-image" />`)
   } else if (type.startsWith('audio/')) {
-    out.push(`<audio controls src="${dataUri}"></audio>`)
+    out.push(`<audio controls ${hashAttr}></audio>`)
   } else {
     out.push(
-      `<a href="${dataUri}" download="${escapeHtml(resource.fileName)}" class="enex-attachment">📎 ${escapeHtml(resource.fileName)}</a>`,
+      `<a ${hashAttr} download="${escapeHtml(resource.fileName)}" class="enex-attachment">📎 ${escapeHtml(resource.fileName)}</a>`,
     )
   }
 }

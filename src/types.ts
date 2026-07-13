@@ -2,8 +2,8 @@ export interface NoteResource {
   hash: string
   mime: string
   fileName: string
-  /** base64-encoded binary data */
-  dataBase64: string
+  /** decoded binary data, stored directly so it isn't duplicated as base64 text */
+  blob: Blob
 }
 
 export interface Note {
