@@ -20,16 +20,64 @@
 .app-layout {
   display: grid;
   grid-template-columns: 260px 320px 1fr;
+  grid-template-rows: auto 1fr;
   height: 100svh;
+}
+
+.app-layout > .year-timeline {
+  grid-column: 1 / -1;
 }
 
 @media (max-width: 900px) {
   .app-layout {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows: auto auto auto 1fr;
     height: auto;
     min-height: 100svh;
   }
+
+  .app-layout > .year-timeline {
+    grid-column: auto;
+  }
+}
+
+/* --- year timeline --- */
+
+.year-timeline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-alt);
+}
+
+.year-chip {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.year-chip:hover {
+  background: var(--accent-bg);
+}
+
+.year-chip.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.year-chip-count {
+  margin-left: 2px;
+  opacity: 0.8;
 }
 
 /* --- sidebar --- */
