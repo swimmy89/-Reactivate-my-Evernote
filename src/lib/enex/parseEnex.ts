@@ -1,10 +1,16 @@
 import SparkMD5 from 'spark-md5'
 import type { Note, NoteResource } from '../../types'
 import { parseEvernoteDate } from './dateUtils'
-import { md5OfBase64 } from './binary'
+import { decodeResource } from './binary'
 import { enmlToHtml } from './enmlToHtml'
 
-export async function parseEnexFile(file: File): Promise<Note[]> {
+/**
+ * Parses notes one at a time and hands each to `onNote` as soon as it's
+ * ready, instead of collecting the whole file into memory. This bounds
+ * peak memory to roughly one note's worth of attachments rather than the
+ * entire export, which matters on memory-constrained devices like iPhones.
+ */
+export async function parseEnexFile(file: File, onNote: (note: Note) => Promise<void> | void): Promise<number> {
   const xmlText = await file.text()
   const doc = new DOMParser().parseFromString(xmlText, 'text/xml')
 
@@ -15,7 +21,12 @@ export async function parseEnexFile(file: File): Promise<Note[]> {
   const notebookName = file.name.replace(/\.enex$/i, '')
   const noteEls = Array.from(doc.getElementsByTagName('note'))
 
-  return noteEls.map((noteEl) => parseNote(noteEl, file.name, notebookName))
+  let count = 0
+  for (const noteEl of noteEls) {
+    await onNote(parseNote(noteEl, file.name, notebookName))
+    count++
+  }
+  return count
 }
 
 function parseNote(noteEl: Element, sourceFile: string, sourceNotebook: string): Note {
@@ -61,8 +72,8 @@ function parseResources(noteEl: Element): NoteResource[] {
     const dataBase64 = (dataEl?.textContent ?? '').replace(/\s+/g, '')
     const mime = textOf(resEl, 'mime') ?? 'application/octet-stream'
     const fileName = textOf(resEl, 'file-name') ?? 'attachment'
-    const hash = dataBase64 ? md5OfBase64(dataBase64) : ''
-    return { hash, mime, fileName, dataBase64 }
+    const { hash, blob } = dataBase64 ? decodeResource(dataBase64, mime) : { hash: '', blob: new Blob() }
+    return { hash, mime, fileName, blob }
   })
 }
 

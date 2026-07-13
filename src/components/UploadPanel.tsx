@@ -25,15 +25,19 @@ export function UploadPanel({ onImported, compact = false }: UploadPanelProps) {
 
       setIsBusy(true)
       setError(null)
-      const allNotes: Note[] = []
+      let total = 0
       try {
         for (const file of files) {
           setStatus(`読み込み中: ${file.name}`)
-          const notes = await parseEnexFile(file)
-          allNotes.push(...notes)
+          // Notes are handed off (and saved) one at a time rather than collected
+          // into one big array, so peak memory stays bounded even for large,
+          // photo-heavy exports on memory-constrained devices.
+          await parseEnexFile(file, (note) => {
+            onImported([note])
+            total++
+          })
         }
-        setStatus(`${allNotes.length}件のノートを読み込みました`)
-        onImported(allNotes)
+        setStatus(`${total}件のノートを読み込みました`)
       } catch (e) {
         setError(e instanceof Error ? e.message : '読み込みに失敗しました')
       } finally {
