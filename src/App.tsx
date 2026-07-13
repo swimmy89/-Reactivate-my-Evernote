@@ -94,7 +94,7 @@ function App() {
         onRandomNote={handleRandomNote}
       />
       <NoteList notes={filteredNotes} selectedNoteId={selectedNoteId} onSelectNote={setSelectedNoteId} />
-      <NoteView note={selectedNote} />
+      <NoteView note={selectedNote} allNotes={notes} onSelectNote={setSelectedNoteId} />
     </div>
   )
 }
