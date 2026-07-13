@@ -9,9 +9,19 @@ interface SidebarProps {
   onSelectTag: (tag: string | null) => void
   onImported: (notes: Note[]) => void
   onClearAll: () => void
+  onRandomNote: () => void
 }
 
-export function Sidebar({ notes, query, onQueryChange, selectedTag, onSelectTag, onImported, onClearAll }: SidebarProps) {
+export function Sidebar({
+  notes,
+  query,
+  onQueryChange,
+  selectedTag,
+  onSelectTag,
+  onImported,
+  onClearAll,
+  onRandomNote,
+}: SidebarProps) {
   const tagCounts = new Map<string, number>()
   for (const note of notes) {
     for (const tag of note.tags) {
@@ -33,6 +43,10 @@ export function Sidebar({ notes, query, onQueryChange, selectedTag, onSelectTag,
         value={query}
         onChange={(e) => onQueryChange(e.target.value)}
       />
+
+      <button type="button" className="random-note-button" onClick={onRandomNote} disabled={notes.length === 0}>
+        🎲 ランダムに1件
+      </button>
 
       <div className="sidebar-section">
         <h2>タグ</h2>

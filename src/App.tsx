@@ -57,6 +57,12 @@ function App() {
 
   const selectedNote = filteredNotes.find((n) => n.id === selectedNoteId) ?? null
 
+  const handleRandomNote = () => {
+    if (filteredNotes.length === 0) return
+    const note = filteredNotes[Math.floor(Math.random() * filteredNotes.length)]
+    setSelectedNoteId(note.id)
+  }
+
   if (isLoading) {
     return <div className="loading-screen">読み込み中…</div>
   }
@@ -85,6 +91,7 @@ function App() {
         onSelectTag={setSelectedTag}
         onImported={handleImported}
         onClearAll={handleClearAll}
+        onRandomNote={handleRandomNote}
       />
       <NoteList notes={filteredNotes} selectedNoteId={selectedNoteId} onSelectNote={setSelectedNoteId} />
       <NoteView note={selectedNote} />
